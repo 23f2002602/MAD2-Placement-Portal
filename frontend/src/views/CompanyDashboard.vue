@@ -1,16 +1,6 @@
-<!--
-  CompanyDashboard.vue — Company's main page
-  
-  Tabs:
-    Overview      → Stats + status check
-    My Drives     → All drives + create new drive
-    Applicants    → View and manage applicants per drive
--->
-
 <template>
   <div style="min-height: 100vh; background: #f8f9fa;">
 
-    <!-- Navbar -->
     <nav class="navbar navbar-dark px-4 py-3" style="background: #343a40; border-bottom: 1px solid #495057;">
       <span class="navbar-brand fw-bold d-flex align-items-center gap-2" style="color: #ffffff;">
         <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor" class="bi bi-mortarboard" viewBox="0 0 16 16">
@@ -31,16 +21,13 @@
 
     <div class="container-fluid p-4">
 
-      <!-- Messages -->
       <div v-if="error"      class="alert alert-danger">{{ error }}</div>
       <div v-if="successMsg" class="alert alert-success">{{ successMsg }}</div>
 
-      <!-- Loading -->
       <div v-if="loading" class="text-center py-5">
         <div class="spinner-border text-primary"></div>
       </div>
 
-      <!-- ── Overview Tab ── -->
       <div v-else-if="activeTab === 'overview'">
         <div v-if="company" class="mb-4">
           <h4 class="text-dark mb-1">{{ company.company_name }}</h4>
@@ -65,7 +52,6 @@
           </div>
         </div>
 
-        <!-- Stats -->
         <div class="row g-3" v-if="dashData">
           <div class="col-md-4">
             <div class="card text-center p-4 bg-white border">
@@ -106,7 +92,6 @@
           </div>
         </div>
 
-        <!-- Download stats CSV -->
         <div class="mt-4" v-if="company?.approval_status === 'approved'">
           <div class="card p-3 d-flex flex-row align-items-center justify-content-between bg-white border">
             <div>
@@ -130,10 +115,8 @@
         </div>
       </div>
 
-      <!-- ── My Drives Tab ── -->
       <div v-else-if="activeTab === 'drives'">
 
-        <!-- Create Drive button (only for approved companies) -->
         <div class="d-flex justify-content-between align-items-center mb-4">
           <h5 class="text-dark mb-0">My Placement Drives</h5>
           <button v-if="company?.approval_status === 'approved'"
@@ -142,7 +125,6 @@
           </button>
         </div>
 
-        <!-- Create Drive Form -->
         <div v-if="showCreateForm" class="card p-4 mb-4 bg-white border">
           <h6 class="text-dark mb-3">Create New Drive</h6>
           <form @submit.prevent="createDrive">
@@ -183,7 +165,6 @@
               </div>
             </div>
 
-            <!-- Eligibility Criteria -->
             <div class="row g-3 mb-3">
               <div class="col">
                 <label class="form-label text-dark">Min CGPA (0 = no min)</label>
@@ -216,7 +197,6 @@
           </form>
         </div>
 
-        <!-- Drives list -->
         <div class="row g-3">
           <div class="col-md-6" v-for="d in drives" :key="d.id">
             <div class="card p-3 bg-white border border-secondary">
@@ -254,11 +234,10 @@
         </div>
       </div>
 
-      <!-- ── Applicants Tab ── -->
       <div v-else-if="activeTab === 'applicants'">
         <div v-if="!selectedDrive">
           <p class="text-muted">Select a drive from "My Drives" to view applicants.</p>
-          <!-- Quick drive select -->
+          
           <div class="row g-3">
             <div class="col-md-4" v-for="d in drives.filter(d => d.applicant_count > 0)" :key="d.id">
               <div class="card p-3 bg-white border border-secondary" style="cursor:pointer;" @click="viewApplicants(d)">
@@ -306,7 +285,6 @@
         </div>
       </div>
 
-      <!-- ── Details Modal Overlay ── -->
       <div v-if="detailModalOpen" class="modal-backdrop fade show" style="z-index: 1040;"></div>
       <div v-if="detailModalOpen" class="modal fade show d-block" tabindex="-1" style="z-index: 1050; background: rgba(0,0,0,0.5);" @click.self="closeDetailModal">
         <div class="modal-dialog modal-dialog-centered modal-lg">
@@ -332,11 +310,9 @@
         </div>
       </div>
 
-
     </div>
   </div>
 </template>
-
 
 <script setup>
 import { ref, onMounted } from 'vue'
@@ -346,7 +322,6 @@ import { clearUser } from '../store.js'
 
 const router = useRouter()
 
-// State
 const loading      = ref(true)
 const company      = ref(null)
 const dashData     = ref(null)
@@ -358,9 +333,8 @@ const selectedDrive = ref(null)
 const applicants   = ref([])
 const error        = ref('')
 const successMsg   = ref('')
-const csvLoading   = ref(false)   // for the download CSV button
+const csvLoading   = ref(false)   
 
-// Detail Modal state
 const detailModalOpen = ref(false)
 const detailTitle     = ref('')
 const detailData      = ref({})
@@ -375,16 +349,14 @@ function closeDetailModal() {
   detailModalOpen.value = false
 }
 
-// Drive creation form fields
 const driveForm = ref({
   drive_name: '', job_title: '', job_description: '',
   salary: '', location: '', interview_type: 'In-person',
   min_cgpa: 0, application_deadline: ''
 })
-const branchesInput  = ref('')  // comma-separated branch string
-const gradYearsInput = ref('')  // comma-separated year string
+const branchesInput  = ref('')  
+const gradYearsInput = ref('')  
 
-// Load dashboard on mount
 onMounted(async () => {
   try {
     const data  = await api.getCompanyDashboard()
@@ -398,7 +370,6 @@ onMounted(async () => {
   }
 })
 
-// Tab switching
 async function switchTab(tab) {
   activeTab.value = tab
   if (tab === 'drives') {
@@ -406,12 +377,11 @@ async function switchTab(tab) {
   }
 }
 
-// Create a new drive
 async function createDrive() {
   creating.value = true
   error.value    = ''
   try {
-    // Parse branch and grad year inputs
+    
     const payload = {
       ...driveForm.value,
       branches: branchesInput.value ? branchesInput.value.split(',').map(s => s.trim()) : [],
@@ -429,13 +399,11 @@ async function createDrive() {
   }
 }
 
-// Close a drive
 async function closeDrive(driveId) {
   await api.closeDrive(driveId)
   drives.value = await api.getCompanyDrives()
 }
 
-// Delete own drive (company DELETE drive action)
 async function deleteOwnDrive(driveId) {
   if (!confirm('Are you sure you want to delete this drive?')) return
   error.value = ''
@@ -450,7 +418,6 @@ async function deleteOwnDrive(driveId) {
   }
 }
 
-// View applicants for a specific drive
 async function viewApplicants(drive) {
   selectedDrive.value = drive
   activeTab.value = 'applicants'
@@ -458,12 +425,11 @@ async function viewApplicants(drive) {
   applicants.value = data.applications
 }
 
-// Update an applicant's status
 async function updateStatus(appId, newStatus) {
   if (!newStatus) return
   try {
     await api.updateApplicationStatus(appId, newStatus)
-    // Refresh the applicants list
+    
     const data = await api.getDriveApplications(selectedDrive.value.id)
     applicants.value = data.applications
   } catch (e) {
@@ -471,7 +437,6 @@ async function updateStatus(appId, newStatus) {
   }
 }
 
-// Download stats CSV
 async function downloadStats() {
   csvLoading.value = true
   try {

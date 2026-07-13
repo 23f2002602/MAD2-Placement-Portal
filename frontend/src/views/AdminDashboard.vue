@@ -1,19 +1,6 @@
-<!--
-  AdminDashboard.vue — Admin control panel
-  
-  Tabs:
-    Overview      → Stats + quick actions
-    Companies     → Approve/reject/blacklist companies
-    Students      → View/blacklist students
-    Drives        → Approve/reject drives
-    Applications  → View all applications
-    Jobs & Tools  → Send reminders, generate reports, download CSV
--->
-
 <template>
   <div style="min-height: 100vh; background: #f8f9fa;">
 
-    <!-- Navbar -->
     <nav class="navbar navbar-dark px-4 py-3" style="background: #343a40; border-bottom: 1px solid #495057;">
       <span class="navbar-brand fw-bold d-flex align-items-center gap-2" style="color: #ffffff;">
         <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor" class="bi bi-mortarboard" viewBox="0 0 16 16">
@@ -32,7 +19,6 @@
       <h4 class="text-dark mb-1">Admin Dashboard</h4>
       <p class="text-muted mb-4">Manage students, companies, and placement drives</p>
 
-      <!-- Stats cards -->
       <div class="row g-3 mb-4" v-if="stats">
         <div class="col" v-for="(val, key) in statCards" :key="key">
           <div class="card text-center p-3 bg-white border">
@@ -42,7 +28,6 @@
         </div>
       </div>
 
-      <!-- Tab navigation -->
       <ul class="nav nav-tabs mb-4" style="border-color: #dee2e6;">
         <li class="nav-item" v-for="tab in tabs" :key="tab.id">
           <button
@@ -55,12 +40,10 @@
         </li>
       </ul>
 
-      <!-- Loading spinner -->
       <div v-if="tabLoading" class="text-center py-4">
         <div class="spinner-border text-primary"></div>
       </div>
 
-      <!-- ── Overview Tab ── -->
       <div v-else-if="activeTab === 'overview'">
         <div class="row g-3">
           <div class="col-md-6">
@@ -113,7 +96,6 @@
         </div>
       </div>
 
-      <!-- ── Companies Tab ── -->
       <div v-else-if="activeTab === 'companies'">
         <div class="d-flex gap-2 mb-3">
           <input v-model="search" type="text" class="form-control border-secondary"
@@ -167,7 +149,6 @@
         </div>
       </div>
 
-      <!-- ── Students Tab ── -->
       <div v-else-if="activeTab === 'students'">
         <div class="d-flex gap-2 mb-3">
           <input v-model="search" type="text" class="form-control border-secondary"
@@ -214,7 +195,6 @@
         </div>
       </div>
 
-      <!-- ── Drives Tab ── -->
       <div v-else-if="activeTab === 'drives'">
         <div class="table-responsive">
           <table class="table table-striped table-hover align-middle border bg-white">
@@ -254,7 +234,6 @@
         </div>
       </div>
 
-      <!-- ── Applications Tab ── -->
       <div v-else-if="activeTab === 'applications'">
         <div class="table-responsive">
           <table class="table table-striped table-hover align-middle border bg-white">
@@ -291,7 +270,6 @@
         </div>
       </div>
 
-      <!-- ── Bootstrap Detail Modal Backdrop & Card (Custom UI Overlay) ── -->
       <div v-if="detailModalOpen" class="modal-backdrop fade show" style="z-index: 1040;"></div>
       <div v-if="detailModalOpen" class="modal fade show d-block" tabindex="-1" style="z-index: 1050; background: rgba(0,0,0,0.5);" @click.self="closeDetailModal">
         <div class="modal-dialog modal-dialog-centered modal-lg">
@@ -317,12 +295,9 @@
         </div>
       </div>
 
-
-      <!-- ── Jobs & Downloads Tab ── -->
       <div v-else-if="activeTab === 'jobs'">
         <div class="row g-4">
 
-          <!-- Daily Reminders Job -->
           <div class="col-md-4">
             <div class="card p-4 h-100 bg-white border">
               <h6 class="text-dark mb-1">Send Daily Reminders</h6>
@@ -330,7 +305,7 @@
                 Emails all active students about placement drives with deadlines in the next 3 days.
                 Students already applied to a drive won't be emailed for it.
               </p>
-              <!-- Status feedback -->
+              
               <div v-if="reminderStatus === 'sent'" class="alert alert-success py-2 mb-2 small">
                 Reminder job dispatched! Emails are being sent.
               </div>
@@ -349,7 +324,6 @@
             </div>
           </div>
 
-          <!-- Monthly Report Job -->
           <div class="col-md-4">
             <div class="card p-4 h-100 bg-white border">
               <h6 class="text-dark mb-1">Generate Monthly Report</h6>
@@ -375,7 +349,6 @@
             </div>
           </div>
 
-          <!-- Download Stats CSV -->
           <div class="col-md-4">
             <div class="card p-4 h-100 bg-white border">
               <h6 class="text-dark mb-1">Download Placement Stats CSV</h6>
@@ -403,7 +376,6 @@
   </div>
 </template>
 
-
 <script setup>
 import { ref, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
@@ -412,11 +384,9 @@ import { clearUser } from '../store.js'
 
 const router = useRouter()
 
-// Tab state
 const activeTab  = ref('overview')
 const tabLoading = ref(false)
 
-// Data loaded from API
 const stats        = ref(null)
 const companies    = ref([])
 const students     = ref([])
@@ -424,22 +394,20 @@ const drives       = ref([])
 const applications = ref([])
 const search       = ref('')
 
-// Jobs tab state
 const reminderLoading = ref(false)
-const reminderStatus  = ref('')   // '' | 'sent' | 'error'
+const reminderStatus  = ref('')   
 const reportLoading   = ref(false)
-const reportStatus    = ref('')   // '' | 'sent' | 'error'
+const reportStatus    = ref('')   
 const csvLoading      = ref(false)
 const csvMsg          = ref('')
 
-// Detail Modal state
 const detailModalOpen = ref(false)
 const detailTitle     = ref('')
 const detailData      = ref({})
 
 function showDetail(title, data) {
   detailTitle.value = title
-  // Clone object to avoid side effects and strip Vue reactive wrappers if needed
+  
   detailData.value = { ...data }
   detailModalOpen.value = true
 }
@@ -448,7 +416,6 @@ function closeDetailModal() {
   detailModalOpen.value = false
 }
 
-// Stat card definitions (label, icon, which field from the API response)
 const statCards = [
   { label: 'Students',    icon: '', field: 'total_students'    },
   { label: 'Companies',   icon: '', field: 'total_companies'   },
@@ -467,7 +434,6 @@ const tabs = [
   { id: 'jobs',          label: 'Jobs & Downloads' },
 ]
 
-// Load dashboard stats on mount
 onMounted(async () => {
   try {
     stats.value = await api.getAdminDashboard()
@@ -476,7 +442,6 @@ onMounted(async () => {
   }
 })
 
-// Load the right data when a tab is clicked
 async function loadTab(tab) {
   tabLoading.value = true
   try {
@@ -484,13 +449,12 @@ async function loadTab(tab) {
     if (tab === 'students')     students.value     = await api.getStudents()
     if (tab === 'drives')       drives.value       = await api.getAdminDrives()
     if (tab === 'applications') applications.value = await api.getAdminApplications()
-    // 'jobs' tab has no pre-load needed
+    
   } finally {
     tabLoading.value = false
   }
 }
 
-// Search handlers
 async function searchCompanies() {
   companies.value = await api.getCompanies(search.value)
 }
@@ -498,21 +462,18 @@ async function searchStudents() {
   students.value = await api.getStudents(search.value)
 }
 
-// Company approval
 async function approveCompany(id, action) {
   await api.approveCompany(id, action)
   companies.value = await api.getCompanies()
   stats.value     = await api.getAdminDashboard()
 }
 
-// Drive approval
 async function approveDrive(id, action) {
   await api.approveDrive(id, action)
   drives.value = await api.getAdminDrives()
   stats.value  = await api.getAdminDashboard()
 }
 
-// Blacklist / reinstate
 async function toggleBlacklist(type, id, blacklist) {
   if (type === 'company') {
     await api.blacklistCompany(id, blacklist)
@@ -523,7 +484,6 @@ async function toggleBlacklist(type, id, blacklist) {
   }
 }
 
-// Delete item (admin DELETE action)
 async function deleteItem(type, id) {
   if (!confirm(`Are you sure you want to delete this ${type}? This action is permanent.`)) return
   try {
@@ -545,8 +505,6 @@ async function deleteItem(type, id) {
     alert(e.response?.data?.error || `Failed to delete ${type}.`)
   }
 }
-
-// ── Jobs tab actions ───────────────────────────────────────────────
 
 async function sendReminders() {
   reminderLoading.value = true
@@ -592,7 +550,6 @@ async function downloadCsv() {
   }
 }
 
-// Logout
 function logout() {
   clearUser()
   router.push('/')

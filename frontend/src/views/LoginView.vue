@@ -1,19 +1,8 @@
-<!--
-  LoginView.vue — Login Page
-  
-  This is a Vue Single File Component (SFC).
-  Every SFC has 3 sections:
-    <template> → the HTML markup
-    <script setup> → the JavaScript logic (Composition API)
-    <style scoped> → CSS that only applies to this component
--->
-
 <template>
   <div class="min-vh-100 d-flex align-items-center justify-content-center" style="background: #eef1f6;">
 
     <div class="card p-4 shadow-sm" style="width: 100%; max-width: 420px; border: 1px solid #ced4da;">
 
-      <!-- Logo / Title -->
       <div class="text-center mb-4">
         <h2 class="fw-bold d-flex align-items-center justify-content-center gap-2" style="color: #007bff;">
           <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" fill="currentColor" class="bi bi-mortarboard" viewBox="0 0 16 16">
@@ -24,12 +13,10 @@
         <p class="text-muted mb-0">College Placement Portal</p>
       </div>
 
-      <!-- Error message (shows only if there's an error) -->
       <div v-if="error" class="alert alert-danger py-2" role="alert">
         {{ error }}
       </div>
 
-      <!-- Login Form -->
       <form @submit.prevent="handleLogin">
 
         <div class="mb-3">
@@ -56,7 +43,6 @@
           />
         </div>
 
-        <!-- Submit button — shows spinner while loading -->
         <button
           type="submit"
           class="btn w-100 fw-semibold"
@@ -69,7 +55,6 @@
 
       </form>
 
-      <!-- Link to register page -->
       <p class="text-center text-secondary mt-3 mb-0">
         Don't have an account?
         <router-link to="/register" style="color: #007bff;">Register here</router-link>
@@ -79,46 +64,40 @@
   </div>
 </template>
 
-
 <script setup>
-// Import Vue utilities and our custom modules
-import { ref } from 'vue'            // ref() creates reactive variables
+
+import { ref } from 'vue'            
 import { useRouter } from 'vue-router'
 import api from '../api.js'
 import { setUser } from '../store.js'
 
 const router = useRouter()
 
-// Reactive form data — these update automatically when the user types
 const form = ref({
   email: '',
   password: ''
 })
 
-const loading = ref(false)  // true while the API request is in progress
-const error   = ref('')     // error message to display
+const loading = ref(false)  
+const error   = ref('')     
 
-// Called when the form is submitted
 async function handleLogin() {
-  error.value   = ''        // clear previous error
+  error.value   = ''        
   loading.value = true
 
   try {
-    // Call the login API endpoint
+    
     const data = await api.login(form.value)
 
-    // Save tokens to localStorage (so they survive page refresh)
     localStorage.setItem('access_token', data.access_token)
     localStorage.setItem('refresh_token', data.refresh_token)
 
-    // Save user info to global store
     setUser(data.user)
 
-    // Navigate to the correct dashboard based on role
     router.push(`/${data.user.role}`)
 
   } catch (err) {
-    // Show the error message from the server, or a generic one
+    
     error.value = err.response?.data?.error || 'Login failed. Please try again.'
   } finally {
     loading.value = false

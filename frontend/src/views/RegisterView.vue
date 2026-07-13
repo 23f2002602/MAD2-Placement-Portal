@@ -1,9 +1,3 @@
-<!--
-  RegisterView.vue — Registration Page
-  Allows new students and companies to create accounts.
-  The form fields change based on which role is selected.
--->
-
 <template>
   <div class="min-vh-100 d-flex align-items-center justify-content-center py-5" style="background: #eef1f6;">
 
@@ -24,7 +18,6 @@
 
       <form @submit.prevent="handleRegister">
 
-        <!-- Role Selection -->
         <div class="mb-3">
           <label class="form-label text-dark">I am a...</label>
           <div class="d-flex gap-3">
@@ -53,7 +46,6 @@
           </div>
         </div>
 
-        <!-- Common fields for both roles -->
         <div class="mb-3">
           <label class="form-label text-dark">Username</label>
           <input v-model="form.username" type="text" class="form-control border-secondary"
@@ -72,7 +64,6 @@
                  placeholder="At least 6 characters" required />
         </div>
 
-        <!-- Student-only fields (shown when role = 'student') -->
         <template v-if="form.role === 'student'">
           <div class="row g-3 mb-3">
             <div class="col">
@@ -112,7 +103,6 @@
           </div>
         </template>
 
-        <!-- Company-only fields (shown when role = 'company') -->
         <template v-if="form.role === 'company'">
           <div class="mb-3">
             <label class="form-label text-dark">Company Name</label>
@@ -159,7 +149,6 @@
   </div>
 </template>
 
-
 <script setup>
 import { ref } from 'vue'
 import { useRouter } from 'vue-router'
@@ -167,19 +156,18 @@ import api from '../api.js'
 
 const router = useRouter()
 
-// All form fields in one reactive object
 const form = ref({
-  role: 'student',   // default to student
+  role: 'student',   
   username: '',
   email: '',
   password: '',
-  // Student fields
+  
   full_name: '',
   department: '',
   cgpa: '',
   graduation_year: '',
   phone: '',
-  // Company fields
+  
   company_name: '',
   hr_contact: '',
   website: '',
@@ -198,7 +186,7 @@ async function handleRegister() {
   try {
     const result = await api.register(form.value)
     success.value = result.message + ' Redirecting to login...'
-    // Go back to login page after 2 seconds
+    
     setTimeout(() => router.push('/'), 2000)
   } catch (err) {
     error.value = err.response?.data?.error || 'Registration failed.'
