@@ -1,8 +1,3 @@
-<!--
-  EditProfile.vue — Student profile editor
-  Also handles resume upload.
--->
-
 <template>
   <div style="min-height: 100vh; background: #f8f9fa;">
 
@@ -23,13 +18,12 @@
       <div v-if="error"      class="alert alert-danger">{{ error }}</div>
       <div v-if="successMsg" class="alert alert-success">{{ successMsg }}</div>
 
-      <!-- Profile loading spinner -->
       <div v-if="loading" class="text-center py-5">
         <div class="spinner-border text-primary"></div>
       </div>
 
       <div v-else>
-        <!-- Profile form -->
+        
         <div class="card p-4 mb-4 bg-white border">
           <h6 class="text-dark mb-3">Personal Information</h6>
           <form @submit.prevent="saveProfile">
@@ -76,7 +70,6 @@
           </form>
         </div>
 
-        <!-- Resume upload section -->
         <div class="card p-4 bg-white border">
           <h6 class="text-dark mb-3">Resume Upload</h6>
 
@@ -105,12 +98,10 @@
   </div>
 </template>
 
-
 <script setup>
 import { ref, onMounted } from 'vue'
 import api from '../api.js'
 
-// State
 const loading      = ref(true)
 const saving       = ref(false)
 const uploading    = ref(false)
@@ -119,7 +110,6 @@ const successMsg   = ref('')
 const currentResume = ref('')
 const selectedFile = ref(null)
 
-// Form data
 const form = ref({
   full_name: '',
   department: '',
@@ -128,7 +118,6 @@ const form = ref({
   phone: '',
 })
 
-// Load current profile on mount
 onMounted(async () => {
   try {
     const profile     = await api.getStudentProfile()
@@ -141,7 +130,6 @@ onMounted(async () => {
   }
 })
 
-// Save profile changes
 async function saveProfile() {
   saving.value = true
   error.value  = ''
@@ -157,19 +145,17 @@ async function saveProfile() {
   }
 }
 
-// File selection handler
 function onFileSelected(event) {
   selectedFile.value = event.target.files[0] || null
 }
 
-// Upload the selected resume file
 async function uploadResume() {
   if (!selectedFile.value) return
   uploading.value = true
   error.value     = ''
   successMsg.value = ''
   try {
-    // FormData is needed to send a file via HTTP
+    
     const formData = new FormData()
     formData.append('resume', selectedFile.value)
     const result = await api.uploadResume(formData)

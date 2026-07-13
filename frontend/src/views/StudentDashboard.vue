@@ -1,16 +1,6 @@
-<!--
-  StudentDashboard.vue — Student's main page
-  
-  Tabs:
-    Drives       → Browse approved drives and apply
-    My Applications → Track application statuses
-    History      → Full placement history + CSV export
--->
-
 <template>
   <div style="min-height: 100vh; background: #f8f9fa;">
 
-    <!-- Navbar -->
     <nav class="navbar navbar-dark px-4 py-3" style="background: #343a40; border-bottom: 1px solid #495057;">
       <span class="navbar-brand fw-bold d-flex align-items-center gap-2" style="color: #ffffff;">
         <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor" class="bi bi-mortarboard" viewBox="0 0 16 16">
@@ -32,7 +22,6 @@
 
     <div class="container-fluid p-4">
 
-      <!-- Student profile card (shown if profile is loaded) -->
       <div v-if="student" class="card p-3 mb-4 d-flex flex-row align-items-center gap-3 bg-white border">
         <div class="rounded-circle d-flex align-items-center justify-content-center fw-bold fs-4"
              style="width:50px;height:50px;background:#007bff;color:white;">
@@ -48,16 +37,13 @@
         </div>
       </div>
 
-      <!-- Error message -->
       <div v-if="error" class="alert alert-danger">{{ error }}</div>
       <div v-if="successMsg" class="alert alert-success">{{ successMsg }}</div>
 
-      <!-- Loading -->
       <div v-if="loading" class="text-center py-5">
         <div class="spinner-border text-primary"></div>
       </div>
 
-      <!-- ── Drives Tab ── -->
       <div v-else-if="activeTab === 'drives'">
         <div class="d-flex justify-content-between align-items-center mb-3 flex-wrap gap-2">
           <h5 class="text-dark mb-0">Placement Drives</h5>
@@ -110,7 +96,6 @@
                 {{ drive.location }}
               </p>
 
-              <!-- Deadline -->
               <p v-if="drive.application_deadline" class="small mb-2 d-flex align-items-center gap-2"
                  :class="isDeadlineSoon(drive.application_deadline) ? 'text-danger fw-bold' : 'text-muted'">
                 <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" fill="currentColor" class="bi bi-clock" viewBox="0 0 16 16">
@@ -120,7 +105,6 @@
                 Deadline: {{ formatDate(drive.application_deadline) }}
               </p>
 
-              <!-- Eligibility errors -->
               <div v-if="!drive.eligible && drive.eligibility_errors.length" class="mb-2">
                 <span v-for="err in drive.eligibility_errors" :key="err"
                       class="badge bg-danger me-1 d-block text-start mb-1" style="font-size:0.7rem; white-space:normal;">
@@ -128,7 +112,6 @@
                 </span>
               </div>
 
-              <!-- Action button -->
               <div class="mt-auto pt-2 d-flex gap-1 flex-column">
                 <button class="btn btn-outline-secondary btn-sm w-100" @click="showDetail('Drive Detail', drive)">Show Details</button>
                 <span v-if="drive.already_applied" class="badge bg-success w-100 py-2">Applied</span>
@@ -147,7 +130,6 @@
         </div>
       </div>
 
-      <!-- ── Applications Tab ── -->
       <div v-else-if="activeTab === 'applications'">
         <h5 class="text-dark mb-3">My Applications</h5>
         <div v-if="applications.length === 0" class="text-center py-5 text-muted">
@@ -187,13 +169,11 @@
         </div>
       </div>
 
-      <!-- ── History Tab ── -->
       <div v-else-if="activeTab === 'history'">
         <div class="d-flex justify-content-between align-items-center mb-3 flex-wrap gap-2">
           <h5 class="text-dark mb-0">Placement History</h5>
           <div class="d-flex align-items-center gap-2 flex-wrap">
 
-            <!-- ✅ Single-click direct download (no Celery needed) -->
             <button
               id="btn-download-csv-direct"
               class="btn btn-sm btn-success d-flex align-items-center gap-2"
@@ -208,10 +188,8 @@
               {{ directDownloading ? 'Preparing…' : 'Download CSV' }}
             </button>
 
-            <!-- Divider -->
             <span class="text-muted small">|</span>
 
-            <!-- Async Celery export (sends email notification when done) -->
             <span v-if="exportStatus && exportStatus !== 'SUCCESS' && exportStatus !== 'FAILURE'"
                   class="badge bg-secondary">
               <span class="spinner-border spinner-border-sm me-1"></span>
@@ -267,7 +245,6 @@
         </div>
       </div>
 
-      <!-- ── Details Modal Overlay ── -->
       <div v-if="detailModalOpen" class="modal-backdrop fade show" style="z-index: 1040;"></div>
       <div v-if="detailModalOpen" class="modal fade show d-block" tabindex="-1" style="z-index: 1050; background: rgba(0,0,0,0.5);" @click.self="closeDetailModal">
         <div class="modal-dialog modal-dialog-centered modal-lg">
@@ -293,11 +270,9 @@
         </div>
       </div>
 
-
     </div>
   </div>
 </template>
-
 
 <script setup>
 import { ref, onMounted, computed } from 'vue'
@@ -307,7 +282,6 @@ import { clearUser } from '../store.js'
 
 const router = useRouter()
 
-// State
 const loading      = ref(true)
 const student      = ref(null)
 const drives       = ref([])
@@ -316,15 +290,14 @@ const history      = ref([])
 const activeTab    = ref('drives')
 const driveSearch  = ref('')
 const eligibleOnly = ref(false)
-const applying     = ref(null)   // ID of drive currently being applied to
+const applying     = ref(null)   
 const exporting    = ref(false)
-const directDownloading = ref(false)   // for the single-click direct CSV download
-const exportStatus   = ref('')      // PENDING | STARTED | SUCCESS | FAILURE
-const exportFilename = ref('')      // filename returned by Celery on SUCCESS
+const directDownloading = ref(false)   
+const exportStatus   = ref('')      
+const exportFilename = ref('')      
 const error        = ref('')
 const successMsg   = ref('')
 
-// Detail Modal state
 const detailModalOpen = ref(false)
 const detailTitle     = ref('')
 const detailData      = ref({})
@@ -339,7 +312,6 @@ function closeDetailModal() {
   detailModalOpen.value = false
 }
 
-// Load all dashboard data on component mount
 onMounted(async () => {
   try {
     const data     = await api.getStudentDashboard()
@@ -353,7 +325,6 @@ onMounted(async () => {
   }
 })
 
-// Filtered drives based on search and eligibility toggle
 const filteredDrives = computed(() => {
   return drives.value.filter(d => {
     const matchesSearch = !driveSearch.value ||
@@ -364,10 +335,8 @@ const filteredDrives = computed(() => {
   })
 })
 
-// Re-filter when search input changes (computed handles this automatically)
-function filterDrives() { /* triggers re-computation */ }
+function filterDrives() {  }
 
-// Switch tab and load data if needed
 async function switchTab(tab) {
   activeTab.value = tab
   if (tab === 'history' && history.value.length === 0) {
@@ -380,14 +349,13 @@ async function switchTab(tab) {
   }
 }
 
-// Apply to a drive
 async function applyToDrive(driveId) {
   applying.value = driveId
   error.value    = ''
   successMsg.value = ''
   try {
     await api.applyToDrive(driveId)
-    // Refresh dashboard to update the applied status
+    
     const data = await api.getStudentDashboard()
     drives.value   = data.available_drives
     applications.value = data.my_applications
@@ -400,19 +368,17 @@ async function applyToDrive(driveId) {
   }
 }
 
-// Withdraw application (student DELETE application action)
 async function withdrawApplication(appId) {
   if (!confirm('Are you sure you want to withdraw this application? This action cannot be undone.')) return
   error.value = ''
   successMsg.value = ''
   try {
     await api.withdrawApplication(appId)
-    // Refresh dashboard data
+    
     const data = await api.getStudentDashboard()
     drives.value   = data.available_drives
     applications.value = data.my_applications
     
-    // Also update history if it has loaded
     if (history.value.length > 0) {
       const histData = await api.getHistory()
       history.value = histData.history
@@ -425,7 +391,6 @@ async function withdrawApplication(appId) {
   }
 }
 
-// Trigger CSV export and poll until complete
 async function exportCsv() {
   exporting.value    = true
   exportStatus.value = ''
@@ -435,7 +400,6 @@ async function exportCsv() {
     const { task_id } = await api.exportCsv()
     successMsg.value = 'Export started — polling for result…'
 
-    // Poll every 2 seconds until the task finishes
     const poll = setInterval(async () => {
       try {
         const res = await api.getExportStatus(task_id)
@@ -464,18 +428,15 @@ async function exportCsv() {
   }
 }
 
-// Format ISO date string to readable format
 function formatDate(isoString) {
   return new Date(isoString).toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' })
 }
 
-// Check if deadline is within 3 days
 function isDeadlineSoon(isoString) {
   const diff = new Date(isoString) - new Date()
   return diff > 0 && diff < 3 * 24 * 60 * 60 * 1000
 }
 
-// Single-click direct CSV download (no Celery — instant stream)
 async function downloadDirect() {
   directDownloading.value = true
   error.value = ''
