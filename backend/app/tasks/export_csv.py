@@ -30,8 +30,11 @@ def export_applications_csv(self, student_id):
 
             return {'status': 'error', 'message': 'Student not found'}
 
-        applications = Application.query.filter_by(student_id=student_id)
-                                        .order_by(Application.applied_at.desc()).all()
+        applications = (
+            Application.query.filter_by(student_id=student_id)
+            .order_by(Application.applied_at.desc())
+            .all()
+        )
 
         export_folder = current_app.config['EXPORT_FOLDER']
 
@@ -92,11 +95,11 @@ def export_applications_csv(self, student_id):
     <html>
     <head>
       <style>
-        body {  font-family: Arial, sans-serif; color: #333; max-width: 600px; margin: 0 auto; padding: 20px; } 
-        .card {  background: #f8f8ff; border-radius: 8px; padding: 24px; border-left: 4px solid #6c63ff; } 
-        h2 {  color: #1a1a2e; } 
-        .badge {  display:inline-block; background:#6c63ff; color:white; padding:4px 12px;
-                  border-radius:20px; font-size:13px; } 
+        body {{  font-family: Arial, sans-serif; color: #333; max-width: 600px; margin: 0 auto; padding: 20px; }} 
+        .card {{  background: #f8f8ff; border-radius: 8px; padding: 24px; border-left: 4px solid #6c63ff; }} 
+        h2 {{  color: #1a1a2e; }} 
+        .badge {{  display:inline-block; background:#6c63ff; color:white; padding:4px 12px;
+                  border-radius:20px; font-size:13px; }} 
       </style>
     </head>
     <body>

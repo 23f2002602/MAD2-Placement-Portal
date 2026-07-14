@@ -202,8 +202,7 @@ def list_drives():
 
         return err, code
 
-    drives = PlacementDrive.query.filter_by(company_id=company.id)
-                                 .order_by(PlacementDrive.created_at.desc()).all()
+    drives = PlacementDrive.query.filter_by(company_id=company.id).order_by(PlacementDrive.created_at.desc()).all()
 
     return jsonify([d.to_dict() for d in drives]), 200
 
@@ -445,8 +444,7 @@ def export_stats_csv():
 
         return err, code
 
-    drives = PlacementDrive.query.filter_by(company_id=company.id)
-                                 .order_by(PlacementDrive.created_at.desc()).all()
+    drives = PlacementDrive.query.filter_by(company_id=company.id).order_by(PlacementDrive.created_at.desc()).all()
 
     output = io.StringIO()
 

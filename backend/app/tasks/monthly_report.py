@@ -116,19 +116,19 @@ def send_monthly_report(self):
     <html>
     <head>
       <style>
-        body {  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; line-height: 1.6; color: #333; background-color: #f4f6f9; padding: 20px; } 
-        .card {  background: white; border-radius: 8px; padding: 32px; max-width: 650px; margin: auto; box-shadow: 0 4px 12px rgba(0,0,0,0.05); } 
-        .header {  border-bottom: 2px solid #eaeaea; padding-bottom: 16px; margin-bottom: 24px; } 
-        .header h2 {  margin: 0; color: #2c3e50; font-size: 24px; } 
-        .header p {  margin: 4px 0 0; color: #7f8c8d; font-size: 14px; } 
-        .stat-grid {  display: flex; gap: 16px; margin-bottom: 24px; } 
-        .stat-box {  flex: 1; background: #f8f9fa; border: 1px solid #e9ecef; border-radius: 6px; padding: 16px; text-align: center; } 
-        .stat-val {  font-size: 28px; font-weight: bold; color: #6c63ff; margin-bottom: 4px; } 
-        .stat-lbl {  font-size: 12px; color: #7f8c8d; text-transform: uppercase; letter-spacing: 0.5px; } 
-        table {  width: 100%; border-collapse: collapse; margin-top: 16px; } 
-        th {  background: #f8f9fa; color: #333; text-align: left; padding: 10px; font-size: 14px; border-bottom: 2px solid #dee2e6; } 
-        td {  padding: 10px; border-bottom: 1px solid #eee; font-size: 14px; } 
-        .footer {  text-align: center; margin-top: 30px; font-size: 12px; color: #aaa; } 
+        body {{  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; line-height: 1.6; color: #333; background-color: #f4f6f9; padding: 20px; }} 
+        .card {{  background: white; border-radius: 8px; padding: 32px; max-width: 650px; margin: auto; box-shadow: 0 4px 12px rgba(0,0,0,0.05); }} 
+        .header {{  border-bottom: 2px solid #eaeaea; padding-bottom: 16px; margin-bottom: 24px; }} 
+        .header h2 {{  margin: 0; color: #2c3e50; font-size: 24px; }} 
+        .header p {{  margin: 4px 0 0; color: #7f8c8d; font-size: 14px; }} 
+        .stat-grid {{  display: flex; gap: 16px; margin-bottom: 24px; }} 
+        .stat-box {{  flex: 1; background: #f8f9fa; border: 1px solid #e9ecef; border-radius: 6px; padding: 16px; text-align: center; }} 
+        .stat-val {{  font-size: 28px; font-weight: bold; color: #6c63ff; margin-bottom: 4px; }} 
+        .stat-lbl {{  font-size: 12px; color: #7f8c8d; text-transform: uppercase; letter-spacing: 0.5px; }} 
+        table {{  width: 100%; border-collapse: collapse; margin-top: 16px; }} 
+        th {{  background: #f8f9fa; color: #333; text-align: left; padding: 10px; font-size: 14px; border-bottom: 2px solid #dee2e6; }} 
+        td {{  padding: 10px; border-bottom: 1px solid #eee; font-size: 14px; }} 
+        .footer {{  text-align: center; margin-top: 30px; font-size: 12px; color: #aaa; }} 
       </style>
     </head>
     <body>

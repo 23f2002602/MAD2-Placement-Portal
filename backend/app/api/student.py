@@ -80,8 +80,7 @@ def dashboard():
 
         return err, code
 
-    drives = PlacementDrive.query.filter_by(status='approved')
-                                 .order_by(PlacementDrive.application_deadline.asc()).all()
+    drives = PlacementDrive.query.filter_by(status='approved').order_by(PlacementDrive.application_deadline.asc()).all()
 
     applied_ids = {a.drive_id for a in Application.query.filter_by(student_id=student.id).all()}
 
@@ -99,8 +98,7 @@ def dashboard():
 
         drives_data.append(dd)
 
-    apps = Application.query.filter_by(student_id=student.id)
-                            .order_by(Application.applied_at.desc()).all()
+    apps = Application.query.filter_by(student_id=student.id).order_by(Application.applied_at.desc()).all()
 
     return jsonify({
 
@@ -380,8 +378,7 @@ def my_applications():
 
         return err, code
 
-    apps = Application.query.filter_by(student_id=student.id)
-                            .order_by(Application.applied_at.desc()).all()
+    apps = Application.query.filter_by(student_id=student.id).order_by(Application.applied_at.desc()).all()
 
     return jsonify([a.to_dict() for a in apps]), 200
 
@@ -451,8 +448,7 @@ def placement_history():
 
         return err, code
 
-    apps = Application.query.filter_by(student_id=student.id)
-                            .order_by(Application.applied_at.desc()).all()
+    apps = Application.query.filter_by(student_id=student.id).order_by(Application.applied_at.desc()).all()
 
     return jsonify({'student': student.to_dict(), 'history': [a.to_dict() for a in apps]}), 200
 
@@ -520,8 +516,7 @@ def direct_csv_download():
 
         return err, code
 
-    applications = Application.query.filter_by(student_id=student.id)
-                                    .order_by(Application.applied_at.desc()).all()
+    applications = Application.query.filter_by(student_id=student.id).order_by(Application.applied_at.desc()).all()
 
     output = io.StringIO()
 

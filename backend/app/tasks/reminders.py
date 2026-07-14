@@ -38,8 +38,8 @@ def send_daily_reminders(self):
 
             return {'sent': 0, 'message': 'No upcoming deadlines in the next 3 days.'}
 
-        students = StudentProfile.query.join(StudentProfile.user)
-                                       .filter(StudentProfile.user.has(is_active=True, is_blacklisted=False)).all()
+        students = (StudentProfile.query.join(StudentProfile.user)
+                    .filter(StudentProfile.user.has(is_active=True, is_blacklisted=False)).all())
 
         sent = 0
 
@@ -70,11 +70,11 @@ def send_daily_reminders(self):
 <html>
 <head>
   <style>
-    body {  font-family: Arial, sans-serif; line-height: 1.6; color: #333; } 
-    .container {  max-width: 600px; margin: 0 auto; padding: 20px; border: 1px solid #ddd; border-radius: 5px; } 
-    .header {  font-size: 18px; font-weight: bold; margin-bottom: 20px; color: #6c63ff; } 
-    .list {  background: #f9f9f9; padding: 15px; border-radius: 4px; font-family: monospace; margin: 15px 0; white-space: pre-wrap; } 
-    .footer {  font-size: 12px; color: #777; margin-top: 20px; border-top: 1px solid #eee; padding-top: 10px; } 
+    body {{  font-family: Arial, sans-serif; line-height: 1.6; color: #333; }} 
+    .container {{  max-width: 600px; margin: 0 auto; padding: 20px; border: 1px solid #ddd; border-radius: 5px; }} 
+    .header {{  font-size: 18px; font-weight: bold; margin-bottom: 20px; color: #6c63ff; }} 
+    .list {{  background: #f9f9f9; padding: 15px; border-radius: 4px; font-family: monospace; margin: 15px 0; white-space: pre-wrap; }} 
+    .footer {{  font-size: 12px; color: #777; margin-top: 20px; border-top: 1px solid #eee; padding-top: 10px; }} 
   </style>
 </head>
 <body>
