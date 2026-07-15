@@ -696,7 +696,7 @@ def trigger_monthly_report():
 
     from app.tasks.monthly_report import send_monthly_report
 
-    task = send_monthly_report.delay()
+    task = send_monthly_report.delay(manual=True)
 
     return jsonify({
 

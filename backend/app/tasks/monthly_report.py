@@ -2,7 +2,7 @@ from app.celery_worker import celery_app
 
 @celery_app.task(name='app.tasks.monthly_report.send_monthly_report', bind=True)
 
-def send_monthly_report(self):
+def send_monthly_report(self, manual=False):
 
     from app import create_app
 
@@ -22,13 +22,19 @@ def send_monthly_report(self):
 
         now = datetime.utcnow()
 
-        if now.month == 1:
+        if manual:
 
-            report_month, report_year = 12, now.year - 1
+            report_month, report_year = now.month, now.year
 
         else:
 
-            report_month, report_year = now.month - 1, now.year
+            if now.month == 1:
+
+                report_month, report_year = 12, now.year - 1
+
+            else:
+
+                report_month, report_year = now.month - 1, now.year
 
         month_start = datetime(report_year, report_month, 1)
 
